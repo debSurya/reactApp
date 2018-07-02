@@ -6,39 +6,42 @@ import Constants from '../../constants';
 export class Activity extends React.Component {
 
     state: {
-        currentPageIdx: number,
         sentences: string[]
     };
+    props: {
+        questionSets: any[],
+        currentPageIdx: number
+    };
     question: string = 'Highlight the proper nouns';
-    questionSets: {}[] = Constants.questionSets;
 
     constructor(props: any) {
         super(props);
 
         this.state = {
-            currentPageIdx: 0,
-            sentences: []
+            sentences: this.props.questionSets[this.props.currentPageIdx].sentences
         };
     }
 
-    componentWillMount() {
-        this.setState((state: {
-            currentPageIdx: number
-        }) => {
-            sentences: this.questionSets[state.currentPageIdx]
-        });
+    componentWillReceiveProps(newProps: {
+        questionSets: {
+            sentences: string[]
+        }[]
+    }) {
+        this.setState({
+            sentences: newProps.questionSets[this.props.currentPageIdx].sentences
+        })
     }
 
     render() {
         return (
             <div className="activity-container">
-                <h3 className="question">
+                <h2 className="question">
                     {this.question}
-                </h3>
+                </h2>
                 <div className="statements-container">
                     {
-                        this.state.sentences.map((item, index) => {
-                            return <p className="sentence" key={"moon" + index}>{item}</p>
+                        this.state.sentences.map((item: string, index: number) => {
+                            return <p className="sentence" key={"moon" + index}>{item}</p>;
                         })
                     }
                 </div>

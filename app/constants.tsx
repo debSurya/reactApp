@@ -1,5 +1,5 @@
 export default class Constants {
-    static questionSets: {}[] = [
+    static questionSets: any[] = [
         {
             sentences: [
                 'Jen adklsl ldk em lkme lmqw qwmdlqwd',
