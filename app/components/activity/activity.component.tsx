@@ -23,12 +23,14 @@ export class Activity extends React.Component {
     }
 
     componentWillReceiveProps(newProps: {
+        currentPageIdx: number,
         questionSets: {
             sentences: string[]
         }[]
     }) {
+        console.log('moon');
         this.setState({
-            sentences: newProps.questionSets[this.props.currentPageIdx].sentences
+            sentences: newProps.questionSets[newProps.currentPageIdx].sentences
         })
     }
 

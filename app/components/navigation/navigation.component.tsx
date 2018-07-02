@@ -7,8 +7,10 @@ export class Navigation extends React.Component {
 
     questionSets: {}[] = Constants.questionSets;
     props: {
-        setNavIdx: Function
-    }
+        setNavIdx: Function,
+        lastIdx: number,
+        currentPageIdx: number
+    };
 
     constructor(props: any) {
         super(props);
@@ -24,7 +26,7 @@ export class Navigation extends React.Component {
         return (
             <div className="navigation-container">
                 <div className="pagination-container">
-                    <button className="prev" onClick={this.setNavIdx} value="prev">Prev</button>
+                    <button className="prev" onClick={this.setNavIdx} value="prev" disabled={this.props.currentPageIdx === 0}>Prev</button>
                     <div className="page-holders">
                         {
                             this.questionSets.map((item, index) => {
@@ -32,7 +34,7 @@ export class Navigation extends React.Component {
                             })
                         }
                     </div>
-                    <button className="next" onClick={this.setNavIdx} value="next">Next</button>
+                    <button className="next" onClick={this.setNavIdx} value="next" disabled={this.props.currentPageIdx === this.props.lastIdx}>Next</button>
                 </div>
             </div>
         )

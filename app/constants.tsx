@@ -13,6 +13,13 @@ export default class Constants {
                 ' nfwenlkmwelmd klkdm qlmkwdlqmkw dlq ',
                 ' wmnf em lmqwdq;lw kdm;lqmkwd l'
             ]
+        },
+        {
+            sentences: [
+                'qlw d;ql mdkqw;qwm;lqmc ;kq ;lqwkmkqn c;wm ;lqmc ;lqmc ;kqjn ',
+                ',qmw dmebjwbvljww nxoi ij cpiwh eujq iwd;qlwdqwnd',
+                '.ldkqwndk qdmoqiw foqwd oqwnfiwjrgo rtk oeirg eibflir oiwe fwoe f'
+            ]
         }
     ];
 }

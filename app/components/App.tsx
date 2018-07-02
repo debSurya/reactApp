@@ -40,7 +40,7 @@ export class App extends React.Component {
                     </div>
                 </div>
                 <Activity currentPageIdx={this.state.currentPageIdx} questionSets={this.questionSets} />
-                <Navigation setNavIdx={this.setNavIdx} />
+                <Navigation setNavIdx={this.setNavIdx} currentPageIdx={this.state.currentPageIdx} lastIdx={this.questionSets.length - 1} />
             </div>
         );
     }
