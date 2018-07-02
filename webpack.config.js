@@ -6,7 +6,7 @@ var HTMLWebpackPlugin = require('html-webpack-plugin'),
     });
 module.exports = {
     entry: './app/index.tsx',
-    watch: true,
+    watch: false,
     module: {
         rules: [{
                 test: /\.tsx$/,

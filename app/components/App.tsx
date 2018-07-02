@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import './app.less';
 import { Activity } from './activity/activity.component';
+import { Navigation } from './navigation/navigation.component';
 
 export class App extends React.Component {
 
