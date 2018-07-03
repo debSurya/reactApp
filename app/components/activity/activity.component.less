@@ -7,11 +7,26 @@
         cursor: pointer;
     }
     .word {
-        &:hover {
+        &.highlighted {
+            background-color: yellow;
+        }
+        &.underlined {
+            text-decoration: underline;
+        }
+        &.highlight:hover {
             background-color: red;
         }
+        &.underline:hover {
+            text-decoration: underline;
+        }
         .character {
-            &:hover {
+            &.colored {
+                color: blue;
+            }
+            &.divider {
+                box-shadow: 2px 0 0 0 red;
+            }
+            &.highlight:hover {
                 background-color: skyblue;
             }
             &.divide:not(.last):hover {

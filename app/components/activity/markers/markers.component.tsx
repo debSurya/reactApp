@@ -7,10 +7,12 @@ export class Markers extends React.Component {
     state: {
         selectedOption: string
     };
+    props: {
+        setSelectedOption: Function
+    };
 
     constructor(props: any) {
         super(props);
-
         this.handleOptionChange = this.handleOptionChange.bind(this);
     }
 
@@ -24,6 +26,7 @@ export class Markers extends React.Component {
         this.setState({
             selectedOption: (event.target as HTMLInputElement).value
         });
+        this.props.setSelectedOption((event.target as HTMLInputElement).value);
     }
 
     render() {
