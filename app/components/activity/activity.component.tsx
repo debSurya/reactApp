@@ -64,7 +64,7 @@ export class Activity extends React.Component {
         this.setState((state: any) => {
             state.markerStates[parseInt(element.parentElement.getAttribute('statement-index'))].push({
                 type: markerToSet,
-                idx: element.getAttribute('word-index')
+                wordIdx: element.getAttribute('word-index')
             });
             return {
                 markerStates: state.markerStates
@@ -84,21 +84,28 @@ export class Activity extends React.Component {
         markerToSet ? this.setState((state: any) => {
             state.markerStates[parseInt(currentDOM.parentElement.parentElement.getAttribute('statement-index'))].push({
                 type: markerToSet,
-                idx: currentDOM.getAttribute('char-index')
+                wordIdx: currentDOM.parentElement.getAttribute('word-index'),
+                charIdx: currentDOM.getAttribute('char-index')
             });
             return {
                 markerStates: state.markerStates
             };
-        }) : this.markWord((event.target as HTMLSpanElement).parentElement);
+        }) : this.markWord(currentDOM.parentElement);
     }
 
-    setMarker(statementIdx: number, wordIdx: number) {
+    setMarker(statementIdx: number, wordIdx: number, charIdx?: number) {
         let classToAdd = '',
             sentenceMarkers = this.state.markerStates[statementIdx];
         if (sentenceMarkers.length) {
-            sentenceMarkers.find((obj: any) => {
-                classToAdd += parseInt(obj.idx) === wordIdx ? ' ' + obj.type : '';
-            });
+            if (typeof charIdx === 'undefined') {
+                sentenceMarkers.find((obj: any) => {
+                    classToAdd += parseInt(obj.wordIdx) === wordIdx ? ' ' + obj.type : '';
+                });
+            } else {
+                sentenceMarkers.find((obj: any) => {
+                    classToAdd += (parseInt(obj.wordIdx) === wordIdx && parseInt(obj.charIdx) === charIdx) ? ' ' + obj.type : '';
+                });
+            }
         }
         return classToAdd;
     }
@@ -119,7 +126,7 @@ export class Activity extends React.Component {
                                     selectedOptionClass = `word${this.state.selectedOption === 'word-highlight' ? ' highlight' : this.state.selectedOption === 'word-underline' ? ' underline' : ''}${this.setMarker(idx1, idx2)}`;
                                 return <React.Fragment key={'moon2' + idx2}>
                                     <span className={selectedOptionClass} word-index={idx2}>{item.split('').map((item, idx3) => {
-                                        let classNames = `${item !== ' ' ? 'character' : ''}${this.state.selectedOption === 'letter-highlight' ? ' highlight' : this.state.selectedOption === 'letter-divide' ? ' divide' : (this.state.selectedOption === 'word-highlight' || this.state.selectedOption === 'word-underline') ? ' block-events' : ''}${idx3 === letterCount - 1 ? ' last' : ''}`;
+                                        let classNames = `${item !== ' ' ? 'character' : ''}${this.state.selectedOption === 'letter-highlight' ? ' highlight' : this.state.selectedOption === 'letter-divide' ? ' divide' : (this.state.selectedOption === 'word-highlight' || this.state.selectedOption === 'word-underline') ? ' block-events' : ''}${idx3 === letterCount - 1 ? ' last' : ''}${this.setMarker(idx1, idx2, idx3)}`;
                                         return <span className={classNames} key={'moon' + idx3} onClick={this.markChar} char-index={idx3}>{item}</span>;
                                     })}</span>
                                     {idx2 !== wordCount - 1 ? <span>&nbsp;</span> : ''}
