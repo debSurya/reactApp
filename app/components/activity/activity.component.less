@@ -4,6 +4,21 @@
         font-family: sans-serif;
         font-weight: bold;
         font-size: large;
+        cursor: pointer;
+    }
+    .word {
+        &:hover {
+            background-color: red;
+        }
+        .character {
+            &:hover {
+                background-color: skyblue;
+            }
+            &.divide:not(.last):hover {
+                background-color: transparent;
+                box-shadow: 1px 0 0 0;
+            }
+        }
     }
 }
 
