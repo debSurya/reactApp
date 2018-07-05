@@ -13,7 +13,8 @@ export class Activity extends React.Component {
         correctMarkers: {
             type: string,
             idx: any[]
-        }[]
+        }[],
+        tickCrossStates: string[]
     };
     props: {
         questionSets: {
@@ -33,7 +34,8 @@ export class Activity extends React.Component {
             sentences: this.props.questionSets[this.props.currentPageIdx].sentences,
             selectedOption: 'word-highlight',
             markerStates: this.resetMarkers(this.props.questionSets[this.props.currentPageIdx].sentences),
-            correctMarkers: this.props.questionSets[this.props.currentPageIdx].correctMarkers
+            correctMarkers: this.props.questionSets[this.props.currentPageIdx].correctMarkers,
+            tickCrossStates: []
         };
         this.setSelectedOption = this.setSelectedOption.bind(this);
         this.markWord = this.markWord.bind(this);
@@ -170,12 +172,10 @@ export class Activity extends React.Component {
     }
 
     validateMarkers() {
-        let incorrect = () => {
-            console.log('incorrect');
-        };
-
         this.state.markerStates.map((sentence: {}[], idx: number) => {
-            let markerCount = sentence.length;
+            let isIncorrect: boolean = false,
+                tickCrossStates: string[] = [],
+                markerCount: number = sentence.length;
             sentence.map((obj: {
                 type: string,
                 wordIdx: string,
@@ -185,11 +185,11 @@ export class Activity extends React.Component {
                 if (typeof obj.charIdx === 'undefined') {
                     if (obj.type === 'highlighted') {
                         if (this.state.correctMarkers[0].idx[idx].indexOf(parseInt(obj.wordIdx)) === -1) {
-                            incorrect();
+                            isIncorrect = true;
                         }
                     } else if (obj.type === 'underlined') {
                         if (this.state.correctMarkers[1].idx[idx].indexOf(parseInt(obj.wordIdx)) === -1) {
-                            incorrect();
+                            isIncorrect = true;
                         }
                     }
                 } else {
@@ -201,16 +201,25 @@ export class Activity extends React.Component {
                         }) => {
                             return (item.wordIdx === parseInt(obj.wordIdx) && (item.charIdx === parseInt(obj.charIdx)));
                         }) === -1) {
-                            incorrect();
+                            isIncorrect = true;
                         }
                     } else if (obj.type === 'colored') {
-                        if (this.state.correctMarkers[3].idx[idx].indexOf(parseInt(obj.wordIdx)) === -1) {
-                            incorrect();
+                        if (this.state.correctMarkers[3].idx[idx].findIndex((item: {
+                            wordIdx: number,
+                            charIdx: number
+                        }) => {
+                            return (item.wordIdx === parseInt(obj.wordIdx) && (item.charIdx === parseInt(obj.charIdx)));
+                        }) === -1) {
+                            isIncorrect = true;
                         }
                     }
                 }
             });
+            if (isIncorrect) {
+                
+            }
         });
+
     }
 
     render() {
