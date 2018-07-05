@@ -2,9 +2,35 @@ export default class Constants {
     static questionSets: any[] = [
         {
             sentences: [
-                'Jen adklsl ldk em lkme lmqw qwmdlqwd',
-                'q asd ka;sl d,als d,lq wd ,qwp[dlq wqwd, ',
-                'la dmksladmsladms amsd lasdkm alsd; qwdqwd'
+                'Jen lost her mittens at King School.',
+                'Kids sing all day at Camp Quest.',
+                'We saw bass in Bells Pond.',
+                'Mel will make props for the play.'
+            ],
+            correctMarkers: [
+                {
+                    'type': 'word-highlight',
+                    'idx': [[0, 5, 6], [5, 6], [4, 5], [0]]
+                },
+                {
+                    'type': 'word-underline',
+                    'idx': [[3], [0, 3], [2], [3, 6]]
+                },
+                {
+                    'type': 'letter-highlight',
+                    'idx': [[{
+                        wordIdx: 0,
+                        charIdx: 2
+                    },
+                    {
+                        wordIdx: 2,
+                        charIdx: 1
+                    }]]
+                },
+                {
+                    'type': 'letter-divide',
+                    'idx': [[]]
+                }
             ]
         },
         {

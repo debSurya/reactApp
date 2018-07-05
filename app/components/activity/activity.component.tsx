@@ -9,11 +9,19 @@ export class Activity extends React.Component {
     state: {
         sentences: string[],
         selectedOption: string,
-        markerStates: any[]
+        markerStates: any[],
+        correctMarkers: {
+            type: string,
+            idx: any[]
+        }[]
     };
     props: {
         questionSets: {
-            sentences: string[]
+            sentences: string[],
+            correctMarkers: {
+                type: string,
+                idx: any[]
+            }[]
         }[],
         currentPageIdx: number
     };
@@ -24,17 +32,13 @@ export class Activity extends React.Component {
         this.state = {
             sentences: this.props.questionSets[this.props.currentPageIdx].sentences,
             selectedOption: 'word-highlight',
-            markerStates: (() => {
-                let structure: any[][] = [];
-                this.props.questionSets[this.props.currentPageIdx].sentences.map((item: string) => {
-                    structure.push([]);
-                });
-                return structure;
-            })()
+            markerStates: this.resetMarkers(this.props.questionSets[this.props.currentPageIdx].sentences),
+            correctMarkers: this.props.questionSets[this.props.currentPageIdx].correctMarkers
         };
         this.setSelectedOption = this.setSelectedOption.bind(this);
         this.markWord = this.markWord.bind(this);
         this.markChar = this.markChar.bind(this);
+        this.validateMarkers = this.validateMarkers.bind(this);
     }
 
     componentWillReceiveProps(newProps: {
@@ -44,8 +48,17 @@ export class Activity extends React.Component {
         }[]
     }) {
         this.setState({
-            sentences: newProps.questionSets[newProps.currentPageIdx].sentences
+            sentences: newProps.questionSets[newProps.currentPageIdx].sentences,
+            markerStates: this.resetMarkers(newProps.questionSets[newProps.currentPageIdx].sentences)
         });
+    }
+
+    resetMarkers(sentences: string[]) {
+        let structure: any[][] = [];
+        sentences.map((item: string) => {
+            structure.push([]);
+        });
+        return structure;
     }
 
     setSelectedOption(value: string) {
@@ -54,7 +67,21 @@ export class Activity extends React.Component {
         });
     }
 
-    markWord(element: HTMLSpanElement) {
+    findExistingMarker(currentStatementStates: any, currentDOM: HTMLSpanElement, markerToSet?: string) {
+        return currentStatementStates.findIndex((obj: {
+            wordIdx: string,
+            charIdx: string,
+            type: string
+        }) => {
+            if (typeof obj.charIdx !== 'undefined') {
+                return (obj.wordIdx === currentDOM.parentElement.getAttribute('word-index') && obj.charIdx === currentDOM.getAttribute('char-index') && (typeof markerToSet !== 'undefined' ? obj.type === markerToSet : true));
+            } else {
+                return (obj.wordIdx === currentDOM.getAttribute('word-index') && (typeof markerToSet !== 'undefined' ? obj.type === markerToSet : true));
+            }
+        });
+    }
+
+    markWord(currentDOM: HTMLSpanElement) {
         let markerToSet = '';
         if (this.state.selectedOption === 'word-highlight') {
             markerToSet = 'highlighted';
@@ -62,35 +89,67 @@ export class Activity extends React.Component {
             markerToSet = 'underlined';
         }
         this.setState((state: any) => {
-            state.markerStates[parseInt(element.parentElement.getAttribute('statement-index'))].push({
-                type: markerToSet,
-                wordIdx: element.getAttribute('word-index')
-            });
-            return {
-                markerStates: state.markerStates
-            };
+            let currentStamentStates = state.markerStates[parseInt(currentDOM.parentElement.getAttribute('statement-index'))];
+            if (this.findExistingMarker(currentStamentStates, currentDOM, markerToSet) === -1) {
+                currentStamentStates.push({
+                    type: markerToSet,
+                    wordIdx: currentDOM.getAttribute('word-index')
+                });
+                return {
+                    markerStates: state.markerStates
+                };
+            }
         });
     }
 
     markChar(event: React.MouseEvent<HTMLSpanElement>) {
         event.stopPropagation();
-        let markerToSet = '';
-        if (this.state.selectedOption === 'letter-highlight') {
+        let markerToSet = '',
+            currentDOM = event.target as HTMLSpanElement;
+        if (this.state.selectedOption === 'eraser') {
+            this.eraseMark(currentDOM, this.state.markerStates[parseInt(currentDOM.parentElement.parentElement.getAttribute('statement-index'))]);
+            return;
+        } else if (this.state.selectedOption === 'letter-highlight') {
             markerToSet = 'colored';
         } else if (this.state.selectedOption === 'letter-divide') {
             markerToSet = 'divider';
         }
-        let currentDOM = event.target as HTMLSpanElement;
         markerToSet ? this.setState((state: any) => {
-            state.markerStates[parseInt(currentDOM.parentElement.parentElement.getAttribute('statement-index'))].push({
-                type: markerToSet,
-                wordIdx: currentDOM.parentElement.getAttribute('word-index'),
-                charIdx: currentDOM.getAttribute('char-index')
-            });
-            return {
-                markerStates: state.markerStates
-            };
+            let currentStamentStates = state.markerStates[parseInt(currentDOM.parentElement.parentElement.getAttribute('statement-index'))];
+            if (this.findExistingMarker(currentStamentStates, currentDOM, markerToSet) === -1) {
+                currentStamentStates.push({
+                    type: markerToSet,
+                    wordIdx: currentDOM.parentElement.getAttribute('word-index'),
+                    charIdx: currentDOM.getAttribute('char-index')
+                });
+                return {
+                    markerStates: state.markerStates
+                };
+            }
         }) : this.markWord(currentDOM.parentElement);
+    }
+
+    eraseMark(currentDOM: HTMLSpanElement, currentElementStates: any[]) {
+        this.setState((state: any) => {
+            let isFound = false;
+            const currentElementStates = state.markerStates[parseInt(currentDOM.parentElement.parentElement.getAttribute('statement-index'))];
+            currentElementStates.map((obj: any, idx: number) => {
+                if (typeof obj.charIdx !== 'undefined') {
+                    if (obj.charIdx === currentDOM.getAttribute('char-index') && obj.wordIdx === currentDOM.parentElement.getAttribute('word-index')) {
+                        currentElementStates.splice(idx, 1);
+                        isFound = true;
+                    }
+                } else if (obj.wordIdx === currentDOM.parentElement.getAttribute('word-index')) {
+                    currentElementStates.splice(idx, 1);
+                    isFound = true;
+                }
+            });
+            if (isFound) {
+                return {
+                    markerStates: state.markerStates
+                };
+            }
+        });
     }
 
     setMarker(statementIdx: number, wordIdx: number, charIdx?: number) {
@@ -110,6 +169,50 @@ export class Activity extends React.Component {
         return classToAdd;
     }
 
+    validateMarkers() {
+        let incorrect = () => {
+            console.log('incorrect');
+        };
+
+        this.state.markerStates.map((sentence: {}[], idx: number) => {
+            let markerCount = sentence.length;
+            sentence.map((obj: {
+                type: string,
+                wordIdx: string,
+                charIdx: string
+            }) => {
+                debugger;
+                if (typeof obj.charIdx === 'undefined') {
+                    if (obj.type === 'highlighted') {
+                        if (this.state.correctMarkers[0].idx[idx].indexOf(parseInt(obj.wordIdx)) === -1) {
+                            incorrect();
+                        }
+                    } else if (obj.type === 'underlined') {
+                        if (this.state.correctMarkers[1].idx[idx].indexOf(parseInt(obj.wordIdx)) === -1) {
+                            incorrect();
+                        }
+                    }
+                } else {
+                    if (obj.type === 'divider') {
+                        console.log(this.state.correctMarkers[2].idx[idx]);
+                        if (this.state.correctMarkers[2].idx[idx].findIndex((item: {
+                            wordIdx: number,
+                            charIdx: number
+                        }) => {
+                            return (item.wordIdx === parseInt(obj.wordIdx) && (item.charIdx === parseInt(obj.charIdx)));
+                        }) === -1) {
+                            incorrect();
+                        }
+                    } else if (obj.type === 'colored') {
+                        if (this.state.correctMarkers[3].idx[idx].indexOf(parseInt(obj.wordIdx)) === -1) {
+                            incorrect();
+                        }
+                    }
+                }
+            });
+        });
+    }
+
     render() {
         console.log(this.state.markerStates);
         return (
@@ -126,7 +229,7 @@ export class Activity extends React.Component {
                                     selectedOptionClass = `word${this.state.selectedOption === 'word-highlight' ? ' highlight' : this.state.selectedOption === 'word-underline' ? ' underline' : ''}${this.setMarker(idx1, idx2)}`;
                                 return <React.Fragment key={'moon2' + idx2}>
                                     <span className={selectedOptionClass} word-index={idx2}>{item.split('').map((item, idx3) => {
-                                        let classNames = `${item !== ' ' ? 'character' : ''}${this.state.selectedOption === 'letter-highlight' ? ' highlight' : this.state.selectedOption === 'letter-divide' ? ' divide' : (this.state.selectedOption === 'word-highlight' || this.state.selectedOption === 'word-underline') ? ' block-events' : ''}${idx3 === letterCount - 1 ? ' last' : ''}${this.setMarker(idx1, idx2, idx3)}`;
+                                        let classNames = `${item !== ' ' ? 'character' : ''}${this.state.selectedOption === 'letter-highlight' ? ' highlight' : this.state.selectedOption === 'letter-divide' ? ' divide' : ''}${idx3 === letterCount - 1 ? ' last' : ''}${this.setMarker(idx1, idx2, idx3)}`;
                                         return <span className={classNames} key={'moon' + idx3} onClick={this.markChar} char-index={idx3}>{item}</span>;
                                     })}</span>
                                     {idx2 !== wordCount - 1 ? <span>&nbsp;</span> : ''}
@@ -135,7 +238,11 @@ export class Activity extends React.Component {
                         })
                     }
                 </div>
-                <Markers setSelectedOption={this.setSelectedOption} />
+                <Markers validateMarkers={this.validateMarkers} setSelectedOption={this.setSelectedOption} clearMarkers={(() => {
+                    this.setState({
+                        markerStates: this.resetMarkers(this.props.questionSets[this.props.currentPageIdx].sentences)
+                    });
+                })} />
             </div>
         );
     }
