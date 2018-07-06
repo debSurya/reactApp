@@ -14,7 +14,8 @@ export class Activity extends React.Component {
             type: string,
             idx: any[]
         }[],
-        tickCrossStates: string[]
+        tickCrossStates: string[],
+        hasTickCross: boolean
     };
     props: {
         questionSets: {
@@ -35,12 +36,14 @@ export class Activity extends React.Component {
             selectedOption: 'word-highlight',
             markerStates: this.resetMarkers(this.props.questionSets[this.props.currentPageIdx].sentences),
             correctMarkers: this.props.questionSets[this.props.currentPageIdx].correctMarkers,
-            tickCrossStates: []
+            tickCrossStates: [],
+            hasTickCross: false
         };
         this.setSelectedOption = this.setSelectedOption.bind(this);
         this.markWord = this.markWord.bind(this);
         this.markChar = this.markChar.bind(this);
         this.validateMarkers = this.validateMarkers.bind(this);
+        this.clearMarkers = this.clearMarkers.bind(this);
     }
 
     componentWillReceiveProps(newProps: {
@@ -51,7 +54,8 @@ export class Activity extends React.Component {
     }) {
         this.setState({
             sentences: newProps.questionSets[newProps.currentPageIdx].sentences,
-            markerStates: this.resetMarkers(newProps.questionSets[newProps.currentPageIdx].sentences)
+            markerStates: this.resetMarkers(newProps.questionSets[newProps.currentPageIdx].sentences),
+            tickCrossStates: []
         });
     }
 
@@ -61,6 +65,14 @@ export class Activity extends React.Component {
             structure.push([]);
         });
         return structure;
+    }
+
+    clearMarkers() {
+        this.setState({
+            markerStates: this.resetMarkers(this.props.questionSets[this.props.currentPageIdx].sentences),
+            tickCrossStates: [],
+            hasTickCross: false
+        });
     }
 
     setSelectedOption(value: string) {
@@ -172,60 +184,102 @@ export class Activity extends React.Component {
     }
 
     validateMarkers() {
-        this.state.markerStates.map((sentence: {}[], idx: number) => {
-            let isIncorrect: boolean = false,
-                tickCrossStates: string[] = [],
-                markerCount: number = sentence.length;
+        let isIncorrect: boolean[] = [],
+            tickCrossStates: string[] = [],
+            wordCheckerByUserInput = (sentenceIdx: number, entryIdx: number, currentIdx: string) => {
+                if (this.state.correctMarkers[sentenceIdx].idx[entryIdx].indexOf(parseInt(currentIdx)) === -1) {
+                    isIncorrect.push(true);
+                }
+            },
+            charCheckerByUserInput = (sentenceIdx: number, entryIdx: number, currentWordIdx: string, currentCharIdx: string) => {
+                if (this.state.correctMarkers[sentenceIdx].idx[entryIdx].findIndex((item: {
+                    wordIdx: number,
+                    charIdx: number
+                }) => {
+                    return (item.wordIdx === parseInt(currentWordIdx) && (item.charIdx === parseInt(currentCharIdx)));
+                }) === -1) {
+                    isIncorrect.push(true);
+                }
+            },
+            wordCheckerByCorrectAnswers = (sentence: any, idxArr: number[], type: string) => {
+                idxArr.map((correctIdx: number) => {
+                    if (sentence.findIndex((currentObj: {
+                        type: string,
+                        wordIdx: string,
+                        charIdx: string
+                    }) => {
+                        return (currentObj.type === type && parseInt(currentObj.wordIdx) === correctIdx);
+                    }) === -1) {
+                        isIncorrect.push(true);
+                    }
+                });
+            },
+            charCheckerByCorrectAnswers = (sentence: any, idxArr: any[], type: string) => {
+                idxArr.map((correctIdx: {
+                    charIdx: number,
+                    wordIdx: number
+                }) => {
+                    if (sentence.findIndex((currentObj: {
+                        type: string,
+                        wordIdx: string,
+                        charIdx: string
+                    }) => {
+                        return (currentObj.type === type && parseInt(currentObj.wordIdx) === correctIdx.wordIdx && parseInt(currentObj.charIdx) === correctIdx.charIdx);
+                    }) === -1) {
+                        isIncorrect.push(true);
+                    }
+                });
+            };
+
+        this.state.markerStates.map((sentence: any, idx: number) => {
             sentence.map((obj: {
                 type: string,
                 wordIdx: string,
                 charIdx: string
             }) => {
-                debugger;
+                // debugger;
                 if (typeof obj.charIdx === 'undefined') {
-                    if (obj.type === 'highlighted') {
-                        if (this.state.correctMarkers[0].idx[idx].indexOf(parseInt(obj.wordIdx)) === -1) {
-                            isIncorrect = true;
-                        }
-                    } else if (obj.type === 'underlined') {
-                        if (this.state.correctMarkers[1].idx[idx].indexOf(parseInt(obj.wordIdx)) === -1) {
-                            isIncorrect = true;
-                        }
-                    }
+                    (obj.type === 'highlighted') ? wordCheckerByUserInput(0, idx, obj.wordIdx) : (obj.type === 'underlined') ? wordCheckerByUserInput(1, idx, obj.wordIdx) : '';
                 } else {
-                    if (obj.type === 'divider') {
-                        console.log(this.state.correctMarkers[2].idx[idx]);
-                        if (this.state.correctMarkers[2].idx[idx].findIndex((item: {
-                            wordIdx: number,
-                            charIdx: number
-                        }) => {
-                            return (item.wordIdx === parseInt(obj.wordIdx) && (item.charIdx === parseInt(obj.charIdx)));
-                        }) === -1) {
-                            isIncorrect = true;
-                        }
-                    } else if (obj.type === 'colored') {
-                        if (this.state.correctMarkers[3].idx[idx].findIndex((item: {
-                            wordIdx: number,
-                            charIdx: number
-                        }) => {
-                            return (item.wordIdx === parseInt(obj.wordIdx) && (item.charIdx === parseInt(obj.charIdx)));
-                        }) === -1) {
-                            isIncorrect = true;
-                        }
-                    }
+                    (obj.type === 'colored') ? charCheckerByUserInput(2, idx, obj.wordIdx, obj.charIdx) : (obj.type === 'divider') ? charCheckerByUserInput(3, idx, obj.wordIdx, obj.charIdx) : '';
                 }
             });
-            if (isIncorrect) {
-                
-            }
+
+            debugger
+            this.state.correctMarkers.map((correctObj: {
+                type: string,
+                idx: any[]
+            }) => {
+                if (correctObj.type === 'word-highlight') {
+                    wordCheckerByCorrectAnswers(sentence, (typeof correctObj.idx[idx] !== 'undefined' ? correctObj.idx[idx] : []), 'highlighted');
+                } else if (correctObj.type === 'word-underline') {
+                    wordCheckerByCorrectAnswers(sentence, (typeof correctObj.idx[idx] !== 'undefined' ? correctObj.idx[idx] : []), 'underlined');
+                } else if (correctObj.type === 'letter-highlight') {
+                    charCheckerByCorrectAnswers(sentence, (typeof correctObj.idx[idx] !== 'undefined' ? correctObj.idx[idx] : []), 'colored');
+                } else if (correctObj.type === 'letter-divide') {
+                    charCheckerByCorrectAnswers(sentence, (typeof correctObj.idx[idx] !== 'undefined' ? correctObj.idx[idx] : []), 'divider');
+                }
+            });
+
+            (!this.state.markerStates[idx].length || isIncorrect.length) ? tickCrossStates.push('incorrect') : tickCrossStates.push('correct');
+            isIncorrect = [];
         });
 
+        this.setState({
+            tickCrossStates,
+            hasTickCross: true
+        });
     }
 
     render() {
-        console.log(this.state.markerStates);
+        let tickCrossDOM: Function;
+        if (this.state.hasTickCross) {
+            tickCrossDOM = (idx1: number) => <img src={this.state.tickCrossStates[idx1] === 'correct' ? '../../assets/tick.png' : this.state.tickCrossStates[idx1] === 'incorrect' ? '../../assets/cross.png' : ''} />;
+        } else {
+            tickCrossDOM = () => { };
+        }
         return (
-            <div className="activity-container">
+            <div className="activity-container" >
                 <h2 className="question">
                     {this.question}
                 </h2>
@@ -233,7 +287,7 @@ export class Activity extends React.Component {
                     {
                         this.state.sentences.map((item: string, idx1: number) => {
                             let wordCount = item.split(' ').length;
-                            return <p className="sentence" key={'moon' + idx1} statement-index={idx1}>{item.split(' ').map((item, idx2) => {
+                            return <React.Fragment key={'moon2' + idx1}><span className="tick-cross">{tickCrossDOM(idx1)}</span><p className="sentence" key={'moon' + idx1} statement-index={idx1}>{item.split(' ').map((item, idx2) => {
                                 let letterCount = item.split('').length,
                                     selectedOptionClass = `word${this.state.selectedOption === 'word-highlight' ? ' highlight' : this.state.selectedOption === 'word-underline' ? ' underline' : ''}${this.setMarker(idx1, idx2)}`;
                                 return <React.Fragment key={'moon2' + idx2}>
@@ -243,15 +297,11 @@ export class Activity extends React.Component {
                                     })}</span>
                                     {idx2 !== wordCount - 1 ? <span>&nbsp;</span> : ''}
                                 </React.Fragment>;
-                            })}</p>;
+                            })}</p><br /></React.Fragment>;
                         })
                     }
                 </div>
-                <Markers validateMarkers={this.validateMarkers} setSelectedOption={this.setSelectedOption} clearMarkers={(() => {
-                    this.setState({
-                        markerStates: this.resetMarkers(this.props.questionSets[this.props.currentPageIdx].sentences)
-                    });
-                })} />
+                <Markers validateMarkers={this.validateMarkers} setSelectedOption={this.setSelectedOption} clearMarkers={this.clearMarkers} />
             </div>
         );
     }
