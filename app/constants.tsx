@@ -38,6 +38,31 @@ export default class Constants {
                 'w q qwd ,mas dmas dam sd.,masd',
                 ' nfwenlkmwelmd klkdm qlmkwdlqmkw dlq ',
                 ' wmnf em lmqwdq;lw kdm;lqmkwd l'
+            ],
+            correctMarkers: [
+                {
+                    'type': 'word-highlight',
+                    'idx': [[1, 3], [2, 3], [4]]
+                },
+                {
+                    'type': 'word-underline',
+                    'idx': [[3], [0, 3], [2]]
+                },
+                {
+                    'type': 'letter-highlight',
+                    'idx': [[{
+                        wordIdx: 0,
+                        charIdx: 2
+                    },
+                    {
+                        wordIdx: 2,
+                        charIdx: 1
+                    }]]
+                },
+                {
+                    'type': 'letter-divide',
+                    'idx': [[]]
+                }
             ]
         },
         {

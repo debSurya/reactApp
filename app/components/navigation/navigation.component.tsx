@@ -23,14 +23,22 @@ export class Navigation extends React.Component {
     }
 
     render() {
+        let className: string = '';
         return (
             <div className="navigation-container">
                 <div className="pagination-container">
                     <button className="prev" onClick={this.setNavIdx} value="prev" disabled={this.props.currentPageIdx === 0}>Prev</button>
                     <div className="page-holders">
                         {
-                            this.questionSets.map((item, index) => {
-                                return <button className="page" key={"moon" + index}></button>;
+                            this.questionSets.map((item: any[], index: number) => {
+                                className = 'page ';
+                                if (index === this.props.currentPageIdx) {
+                                    className += 'active';
+                                }
+                                if (index < this.props.lastIdx) {
+                                    className += 'completed';
+                                }
+                                return <span className={className} key={"moon" + index}></span>;
                             })
                         }
                     </div>
