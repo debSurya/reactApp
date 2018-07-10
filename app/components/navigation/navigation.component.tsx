@@ -32,11 +32,11 @@ export class Navigation extends React.Component {
                         {
                             this.questionSets.map((item: any[], index: number) => {
                                 className = 'page ';
+                                if (index < this.props.currentPageIdx) {
+                                    className += 'completed ';
+                                }
                                 if (index === this.props.currentPageIdx) {
                                     className += 'active';
-                                }
-                                if (index < this.props.lastIdx) {
-                                    className += 'completed';
                                 }
                                 return <span className={className} key={"moon" + index}></span>;
                             })
