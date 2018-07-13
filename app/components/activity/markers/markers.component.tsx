@@ -28,11 +28,12 @@ export class Markers extends React.Component {
         });
     }
 
-    handleOptionChange(event: React.FormEvent<HTMLInputElement>) {
+    handleOptionChange(event: React.FormEvent<HTMLImageElement>) {
+
         this.setState({
-            selectedOption: (event.target as HTMLInputElement).value
+            selectedOption: (event.target as HTMLImageElement).getAttribute('data-value')
         });
-        this.props.setSelectedOption((event.target as HTMLInputElement).value);
+        this.props.setSelectedOption((event.target as HTMLImageElement).getAttribute('data-value'));
     }
 
     handleMarkerClearance() {
@@ -47,26 +48,26 @@ export class Markers extends React.Component {
         return (
             <div className="master-marker-container">
                 <div className="markers-container">
-                    <label htmlFor="word-highlight">
-                        <input type="radio" className="marker" value="word-highlight" id="word-highlight" checked={this.state.selectedOption === 'word-highlight'} onChange={this.handleOptionChange} disabled={this.props.activityDone}/>
-                        Word Highlight
-                </label>
-                    <label htmlFor="word-underline">
-                        <input type="radio" className="marker" value="word-underline" id="word-underline" checked={this.state.selectedOption === 'word-underline'} onChange={this.handleOptionChange} disabled={this.props.activityDone}/>
-                        Word Underline
-                </label>
-                    <label htmlFor="letter-highlight">
-                        <input type="radio" className="marker" value="letter-highlight" id="letter-highlight" checked={this.state.selectedOption === 'letter-highlight'} onChange={this.handleOptionChange} disabled={this.props.activityDone}/>
-                        Letter Highlight
-                </label>
-                    <label htmlFor="letter-divide">
-                        <input type="radio" className="marker" value="letter-divide" id="letter-divide" checked={this.state.selectedOption === 'letter-divide'} onChange={this.handleOptionChange} disabled={this.props.activityDone}/>
-                        Letter Divide
-                </label>
-                    <label htmlFor="eraser">
-                        <input type="radio" className="marker" value="eraser" id="eraser" checked={this.state.selectedOption === 'eraser'} onChange={this.handleOptionChange} disabled={this.props.activityDone}/>
-                        Eraser
-                </label>
+                    <div className="highlight">
+                        <img className={this.state.selectedOption === 'word-highlight' ? 'img-highlight active' : 'img-highlight'} src="../../../assets/lamp.png" alt="Word Highlight" data-value="word-highlight" onClick={this.handleOptionChange} /><br />
+                        <span className="img-highlight-lbl" aria-hidden="true">Word Highlight</span>
+                    </div>
+                    <div className="underline">
+                        <img className={this.state.selectedOption === 'word-underline' ? 'img-underline active' : 'img-underline'} src="../../../assets/ruler.png" alt="Word Underline" data-value="word-underline" onClick={this.handleOptionChange} /><br />
+                        <span className="img-underline-lbl" aria-hidden="true">Word Underline</span>
+                    </div>
+                    <div className="color">
+                        <img className={this.state.selectedOption === 'letter-highlight' ? 'img-color active' : 'img-color'} src="../../../assets/paintbrush.png" alt="Letter Highlight" data-value="letter-highlight" onClick={this.handleOptionChange} /><br />
+                        <span className="img-color-lbl" aria-hidden="true">Letter Highlight</span>
+                    </div>
+                    <div className="divide">
+                        <img className={this.state.selectedOption === 'letter-divide' ? 'img-divide active' : 'img-divide'} src="../../../assets/saw.png" alt="Letter Divide" data-value="letter-divide" onClick={this.handleOptionChange} /><br />
+                        <span className="img-divide-lbl" aria-hidden="true">Letter Divide</span>
+                    </div>
+                    <div className="eraser">
+                        <img className={this.state.selectedOption === 'eraser' ? 'img-eraser active' : 'img-eraser'} src="../../../assets/eraser.png" alt="Eraser" data-value="eraser" onClick={this.handleOptionChange} /><br />
+                        <span className="img-eraser-lbl" aria-hidden="true">Eraser</span>
+                    </div>
                 </div>
                 <div className="validators-container">
                     <button className="reset" onClick={this.handleMarkerClearance} disabled={this.props.activityDone}>Reset</button>

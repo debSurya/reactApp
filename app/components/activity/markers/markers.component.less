@@ -1,14 +1,53 @@
 .master-marker-container {
     position: relative;
-    bottom: 10%;
+    bottom: 0;
+    width: 100%;
     .markers-container {
         position: relative;
         float: left;
         display: inline;
         left: 20px;
+        div {
+            &.highlight,
+            &.underline,
+            &.color,
+            &.divide,
+            &.eraser {
+                display: inline;
+                float: left;
+                margin-right: 15px;
+            }
+            span {
+                color: #00ffff;
+                text-shadow: 0px 0px 2px #00ffff;
+                font-weight: 500;
+                &.img-divide-lbl {
+                    margin-left: 10px;
+                }
+                &.img-eraser-lbl {
+                    margin-left: 40px;
+                }
+            }
+        }
+        img {
+            &.img-highlight,
+            &.img-underline,
+            &.img-color,
+            &.img-divide,
+            &.img-eraser {
+                width: 60px;
+                height: 60px;
+                margin-left: 25px;
+                cursor: pointer;
+                &:hover,
+                &.active {
+                    box-shadow: 0px 0px 5px 1px white
+                }
+            }
+        }
     }
     .validators-container {
-        position: relative;
+        position: absolute;
         float: right;
         display: inline;
         right: 20px;
