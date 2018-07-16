@@ -46,8 +46,11 @@ export class App extends React.Component {
                 <div className="title-container">
                     <h2 className="title">{this.title}</h2>
                     <div className="buttons-container">
-                        <button className="help">Help</button>
-                        <button className="close">Close</button>
+                        <button className="help">
+                            <i className="fa fa-question-circle"></i></button>
+                        <button className="close">
+                            <i className="fa fa-times-circle"></i>
+                        </button>
                     </div>
                 </div>
                 <Activity currentPageIdx={this.state.currentPageIdx} questionSets={this.questionSets} enableNextQuestion={this.enableNextQuestion} />

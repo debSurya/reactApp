@@ -24,7 +24,7 @@
                 text-decoration: underline;
             }
             &.highlight:hover {
-                background-color: red;
+                background-color: #b8b7e6;
             }
             &.underline:hover {
                 text-decoration: underline;
@@ -37,12 +37,20 @@
                     box-shadow: 2px 0 0 0 red;
                 }
                 &.highlight:hover {
-                    background-color: skyblue;
+                    background-color: #b8b7e6;
                 }
                 &.divide:not(.last):hover {
                     background-color: transparent;
                     box-shadow: 1px 0 0 0;
                 }
+                &:focus {
+                    outline: none;
+                    background-color: #b8b7e6;
+                }
+            }
+            &:focus {
+                outline: none;
+                background-color: #b8b7e6;
             }
         }
     }
