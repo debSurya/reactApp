@@ -33,7 +33,7 @@ export class App extends React.Component {
     }
 
     enableNextQuestion() {
-        if (this.state.currentPageIdx === this.state.lastIdx) {
+        if (this.state.currentPageIdx === this.state.lastIdx && this.questionSets.length - this.state.lastIdx !== 1) {
             this.setState({
                 lastIdx: ++this.state.lastIdx
             });
