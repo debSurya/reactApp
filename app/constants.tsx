@@ -35,9 +35,9 @@ export default class Constants {
         },
         {
             sentences: [
-                'w q qwd ,mas dmas dam sd.,masd',
-                ' nfwenlkmwelmd klkdm qlmkwdlqmkw dlq ',
-                ' wmnf em lmqwdq;lw kdm;lqmkwd l'
+                'I have to cook dinner today.',
+                'Tom lived in Japan for ten years.',
+                'I do not know if he will visit us next Sunday.'
             ],
             correctMarkers: [
                 {
@@ -67,9 +67,34 @@ export default class Constants {
         },
         {
             sentences: [
-                'qlw d;ql mdkqw;qwm;lqmc ;kq ;lqwkmkqn c;wm ;lqmc ;lqmc ;kqjn ',
-                ',qmw dmebjwbvljww nxoi ij cpiwh eujq iwd;qlwdqwnd',
-                '.ldkqwndk qdmoqiw foqwd oqwnfiwjrgo rtk oeirg eibflir oiwe fwoe f'
+                'He studied English history.',
+                'He is used to mountain climbing.',
+                'She left her umbrella in the train.'
+            ],
+            correctMarkers: [
+                {
+                    'type': 'word-highlight',
+                    'idx': [[2, 3], [0], [3]]
+                },
+                {
+                    'type': 'word-underline',
+                    'idx': [[4], [1, 2], [4]]
+                },
+                {
+                    'type': 'letter-highlight',
+                    'idx': [[{
+                        wordIdx: 0,
+                        charIdx: 2
+                    },
+                    {
+                        wordIdx: 2,
+                        charIdx: 1
+                    }]]
+                },
+                {
+                    'type': 'letter-divide',
+                    'idx': [[]]
+                }
             ]
         }
     ];

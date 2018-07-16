@@ -232,7 +232,6 @@ export class Activity extends React.Component {
                     })());
                 });
             });
-
             this.state.tickCrossStates[currentIdx] = 'correct';
         });
     }
@@ -350,9 +349,9 @@ export class Activity extends React.Component {
                                 let letterCount = item.split('').length,
                                     selectedOptionClass = `word${this.state.selectedOption === 'word-highlight' ? ' highlight' : this.state.selectedOption === 'word-underline' ? ' underline' : ''}${this.setMarker(idx1, idx2)}`;
                                 return <React.Fragment key={'moon2' + idx2}>
-                                    <span className={selectedOptionClass} word-index={idx2}>{item.split('').map((item, idx3) => {
+                                    <span className={selectedOptionClass} tabIndex={(this.state.selectedOption === 'word-highlight' || this.state.selectedOption === 'word-underline') ? 0 : -1} word-index={idx2}>{item.split('').map((item, idx3) => {
                                         let classNames = `${item !== ' ' ? 'character' : ''}${this.state.selectedOption === 'letter-highlight' ? ' highlight' : this.state.selectedOption === 'letter-divide' ? ' divide' : ''}${idx3 === letterCount - 1 ? ' last' : ''}${this.setMarker(idx1, idx2, idx3)}`;
-                                        return <span className={classNames} key={'moon' + idx3} onClick={this.markChar} char-index={idx3}>{item}</span>;
+                                        return <span className={classNames} key={'moon' + idx3} tabIndex={(this.state.selectedOption === 'letter-highlight' || this.state.selectedOption === 'letter-divide' || this.state.selectedOption === 'eraser') ? 0 : -1} onClick={this.markChar} char-index={idx3}>{item}</span>;
                                     })}</span>
                                     {idx2 !== wordCount - 1 ? <span>&nbsp;</span> : ''}
                                 </React.Fragment>;
